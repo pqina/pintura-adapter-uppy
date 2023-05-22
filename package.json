@@ -1,0 +1,27 @@
+{
+    "version": "9.0.0",
+    "name": "@pqina/uppy-pintura",
+    "browser": "dist/useEditorWithUppy.js",
+    "main": "dist/useEditorWithUppy.js",
+    "module": "src/useEditorWithUppy.js",
+    "description": "Pintura Image Editor adapter for use with Uppy",
+    "author": "Rik Schennink at PQINA",
+    "homepage": "https://pqina.nl/pintura/",
+    "license": "https://pqina.nl/pintura/license/",
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && mv dist/useEditorWithUppy.iife.js dist/useEditorWithUppy-iife.js",
+        "preview": "vite preview"
+    },
+    "peerDependencies": {
+        "@pqina/pintura": "^8.x",
+        "uppy": "^2.x"
+    },
+    "devDependencies": {
+        "vite": "^4.3.5"
+    }
+}
