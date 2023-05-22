@@ -1,9 +1,9 @@
-# Pintura Dropzone Adapter
+# Pintura Uppy Adapter
 
-This package exports a Pintura Dropzone adapter which makes it easier to use Pintura with Dropzone.
+This package exports a Pintura Uppy adapter which makes it easier to use Pintura with Uppy.
 
 Visit https://pqina.nl/pintura for more details.
 
-Dropzone example projects:
+Uppy example projects:
 
--   https://github.com/pqina/pintura-example-dropzone
+-   https://github.com/pqina/pintura-example-uppy
