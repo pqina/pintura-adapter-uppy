@@ -1,11 +1,7 @@
-export default function (openEditor, editorOptions = {}, getUppyRef) {
-    const queue = [];
+import { UIPlugin } from '@uppy/core';
 
-    const canEditFile = (file) => {
-        if (file.isRemote) return false;
-        if (!(file.data instanceof Blob)) return false;
-        return /^image/.test(file.type) && !/svg/.test(file.type);
-    };
+const createImageEditorQueue = (uppy, editorFactory, editorOptions) => {
+    const queue = [];
 
     const editNextFile = () => {
         const next = queue[0];
@@ -14,8 +10,10 @@ export default function (openEditor, editorOptions = {}, getUppyRef) {
 
     const queueFile = (file) => {
         queue.push(function () {
-            const editor = openEditor({
+            const editor = editorFactory({
                 ...editorOptions,
+
+                // file blob as src
                 src: file.data,
             });
 
@@ -33,18 +31,18 @@ export default function (openEditor, editorOptions = {}, getUppyRef) {
                 // Don't add file if cancelled
                 if (!dest) return;
 
-                // add the modified file
-                const uppy = getUppyRef ? getUppyRef() : window['uppy'];
-
-                // can't
-                dest.__handledByEditor = true;
-
-                // add the file
                 uppy.addFile({
+                    // clone file
+                    ...file,
+
+                    // overwrite file data
                     data: dest,
-                    name: dest.name,
-                    type: dest.type,
-                    size: dest.size,
+
+                    // update metadata so we know this file was edited
+                    meta: {
+                        ...file.meta,
+                        didEdit: true,
+                    },
                 });
             });
         });
@@ -53,13 +51,65 @@ export default function (openEditor, editorOptions = {}, getUppyRef) {
         if (queue.length === 1) editNextFile();
     };
 
-    return function (file) {
-        if (file.data.__handledByEditor || !canEditFile(file)) return true;
+    return {
+        canEditFile(file) {
+            // Is remote file
+            if (file.isRemote) return false;
 
-        // edit first, then add manually
-        queueFile(file);
+            // Can only edit local file blobs
+            if (!(file.data instanceof Blob)) return false;
 
-        // can't add now, we have to wait for editing to finish
-        return false;
+            // Has to be a bitmap image
+            return /^image/.test(file.type) && !/svg/.test(file.type);
+        },
+        didEditFile(file) {
+            return !!file.meta.didEdit;
+        },
+        editFile(file) {
+            queueFile(file);
+        },
+        destroy() {
+            queue = [];
+        },
     };
+};
+
+export default class PinturaEditor extends UIPlugin {
+    constructor(uppy, options) {
+        super(uppy);
+
+        this.id = 'PinturaEditor';
+        this.type = 'editor';
+
+        const { factory, options: editorOptions = {} } = options;
+
+        // needs factory
+        if (!factory) return;
+
+        // can't have src
+        delete editorOptions.src;
+
+        this.factory = factory;
+        this.options = editorOptions;
+
+        // so scope is fixed
+        this.didAddFile = (file) => this.onAddFile(file);
+    }
+
+    onAddFile(file) {
+        if (this.editor.canEditFile(file) && !this.editor.didEditFile(file)) {
+            this.uppy.removeFile(file.id);
+            this.editor.editFile(file);
+        }
+    }
+
+    install() {
+        this.editor = createImageEditorQueue(this.uppy, this.factory, this.options);
+        this.uppy.on('file-added', this.didAddFile);
+    }
+
+    uninstall() {
+        this.editor.destroy();
+        this.uppy.off('file-added', this.didAddFile);
+    }
 }
