@@ -5,13 +5,13 @@ export default {
         type: ['es'],
         lib: {
             entry: resolve(__dirname, 'src/index.js'),
-            name: 'PinturaEditor',
-            fileName: 'PinturaEditor',
+            name: 'PinturaPlugin',
+            fileName: 'PinturaPlugin',
             formats: ['es'],
         },
         rollupOptions: {
             output: {
-                globals: 'PinturaEditor',
+                globals: 'PinturaPlugin',
             },
         },
     },

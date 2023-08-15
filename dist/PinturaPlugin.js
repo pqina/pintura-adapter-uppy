@@ -2339,7 +2339,7 @@ const ms = (r, e, t) => {
       i(o);
     },
     destroy() {
-      s = [];
+      s.length = 0;
     }
   };
 };

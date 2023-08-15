@@ -1,8 +1,8 @@
 {
-    "version": "10.0.0",
+    "version": "10.0.1",
     "name": "@pqina/uppy-pintura",
-    "browser": "dist/PinturaEditor.js",
-    "main": "dist/PinturaEditor.js",
+    "browser": "dist/PinturaPlugin.js",
+    "main": "dist/PinturaPlugin.js",
     "module": "src/index.js",
     "description": "Pintura Image Editor adapter for use with Uppy",
     "author": "Rik Schennink at PQINA",

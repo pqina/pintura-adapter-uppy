@@ -69,7 +69,7 @@ const createImageEditorQueue = (uppy, editorFactory, editorOptions) => {
             queueFile(file);
         },
         destroy() {
-            queue = [];
+            queue.length = 0;
         },
     };
 };
